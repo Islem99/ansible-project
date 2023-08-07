@@ -1,2 +1,3 @@
 hosts
 project-vars
+terraform.tfstate
