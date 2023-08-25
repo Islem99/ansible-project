@@ -21,29 +21,9 @@ Pour générer une paire de clés SSH (clé publique et clé privée), nous pouc
 
 `ssh-keygen -t rsa -f ~/.ssh/ma_cle`  -t pour spécifier le type de clé (par défaut RSA), et l'option -f pour indiquer le nom du fichier où la clé sera enregistrée.
 
-Pour sécuriser le nom d'utilisateur et le mot de passe de votre compte Docker Hub vous pouvez les mettre dans un fichier .env puis chiffrer ce fichier en utilisant Ansible-vault. Voici comment procéder :
-
-1- Créez le fichier .env : Commencez par créer un nouveau fichier .env où vous stockerez le nom d'utilisateur et le mot de passe de votre compte Docker Hub.  `touch .env`.
-
-2- Ajoutez les variables d'environnement : Dans le fichier .env, ajoutez les variables d'environnement contenant le nom d'utilisateur et le mot de passe de votre compte Docker Hub. Par exemple : 
-  ```
-   docker_username =my_docker_username
-   docker_password=my_docker_password
-  ```
-3- Chiffrez le fichier .env avec Ansible Vault : Utilisez Ansible Vault pour chiffrer le fichier .env contenant les variables d'environnement sensibles. Exécutez la commande suivante pour chiffrer le fichier .env : `ansible-vault encrypt .env` Vous serez invité à saisir le mot de passe pour chiffrer le fichier.
-
-4- Dans vos playbooks, vous pouvez accéder aux variables d'environnement chiffrées en utilisant:
-
-```
-vars_files:
-    - .env
-
-```
-
-5- Vous devez augmenter les zones de mémoire virtuelle maximale pour vous pouvez lancer tous les conteneurs.
 
 
-## Lancement de Ansible
+## Lancement Ansible
 
 Pour lancer Ansible, nous pouvons utiliser la commande ansible-playbook suivi du nom du playbook que vous souhaitez exécute
 
