@@ -1,67 +1,75 @@
+# Cette section du playbook installe Python3, Docker et Docker-compose sur les hôtes du groupe 'Docker_server'
 ---
 - name: Install python3, docker, and docker-compose
-  hosts: Docker_server
-  become: yes
+  hosts: Docker_server  # Applique ce playbook aux hôtes du groupe 'Docker_server'
+  become: yes  # Utilise l'élévation de privilèges pour exécuter les tâches en tant que superutilisateur (root)
   tasks:
     - name: Make sure python3 and docker are installed
       vars: 
-        ansible_python_interpreter: /usr/bin/python3
-      apt:
+        ansible_python_interpreter: /usr/bin/python3  # Utilise Python3 pour exécuter les modules Ansible
+      apt:  # Utilise le module 'apt' pour gérer les paquets sur des systèmes basés sur Debian/Ubuntu
         name: 
-          - python3
-          - docker.io
-        update_cache: yes
-        state: present
+          - python3  # Installe Python3
+          - docker.io  # Installe Docker
+        update_cache: yes  # Met à jour le cache des paquets
+        state: present  # Assure que les paquets spécifiés sont installés
+
     - name: Install Docker-compose
       get_url: 
-        url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-{{lookup('pipe', 'uname -m')}} 
-        dest: /usr/local/bin/docker-compose
-        mode: +x
+        url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-{{lookup('pipe', 'uname -m')}}  # Télécharge Docker-compose
+        dest: /usr/local/bin/docker-compose  # Enregistre Docker-compose en tant qu'exécutable
+        mode: +x  # Donne des droits d'exécution au fichier
+
     - name: Increase max virtual memory areas
-      sysctl:
-        name: vm.max_map_count
-        value: 262144  
-        state: present
+      sysctl:  # Utilise le module 'sysctl' pour ajuster les paramètres du noyau
+        name: vm.max_map_count  # Paramètre de noyau à configurer
+        value: 262144  # Nouvelle valeur pour le paramètre
+        state: present  # Assure que le paramètre est configuré
         sysctl_set: yes
-      become: true
-      become_user: root
+      become: true  # Exécute la tâche en tant que superutilisateur (root)
+      become_user: root  # Utilise l'utilisateur root pour exécuter la tâche
+
     - name: Start Docker daemon
-      systemd: 
-         name: docker
-         state: started
+      systemd:  # Utilise le module 'systemd' pour gérer les services
+         name: docker  # Nom du service Docker
+         state: started  # Démarre le service Docker
+
     - name: Install pip3
-      raw: sudo apt update && sudo apt install -y python3-pip
+      raw: sudo apt update && sudo apt install -y python3-pip  # Met à jour et installe pip3
+
     - name: Install docker python module
-      pip:
+      pip:  # Utilise le module 'pip' pour gérer les paquets Python
         name: 
-          - docker
-          - docker-compose
-        executable: pip3
-        state: present
-     
+          - docker  # Installe le module Docker pour Python
+          - docker-compose  # Installe le module Docker-compose pour Python
+        executable: pip3  # Utilise pip3 pour installer les paquets
+        state: present  # Assure que les paquets spécifiés sont installés
+
+# Cette section du playbook ajoute l'utilisateur 'ubuntu' au groupe 'docker' pour gérer Docker sans sudo
 - name: Add ubuntu to docker group
-  hosts: Docker_server
-  become: yes
+  hosts: Docker_server  # Applique ces tâches aux hôtes du groupe 'Docker_server'
+  become: yes  # Utilise l'élévation de privilèges pour exécuter les tâches en tant que superutilisateur (root)
   tasks:
     - name: Add ubuntu to docker group
-      user: 
-        name: ubuntu
-        groups: docker
-        append: yes
+      user:  # Utilise le module 'user' pour gérer les utilisateurs
+        name: ubuntu  # Nom de l'utilisateur
+        groups: docker  # Ajoute l'utilisateur au groupe 'docker'
+        append: yes  # Ajoute l'utilisateur au groupe sans retirer d'autres groupes
     - name: Reconnect to server session
-      meta: reset_connection
+      meta: reset_connection  # Réinitialise la connexion SSH pour que les modifications de groupe prennent effet
 
+# Cette section du playbook démarre les conteneurs Docker en utilisant Docker-compose
 - name: Start docker containers
-  hosts: Docker_server
+  hosts: Docker_server  # Applique ce playbook aux hôtes du groupe 'Docker_server'
   vars_files:
-    - project-vars
+    - project-vars  # Charge les variables à partir d'un fichier externe
   tasks:
     - name: Copy docker compose
-      copy:
-        src: /home/ubuntu/docker-compose/docker-compose.yml
-        dest: /home/ubuntu/docker-compose.yaml
+      copy:  # Utilise le module 'copy' pour copier des fichiers locaux vers les hôtes distants
+        src: ./docker-compose.yml  # Chemin local du fichier de composition Docker
+        dest: /home/ubuntu/docker-compose.yaml  # Chemin distant de destination pour le fichier copié
 
     - name: Start container from compose
-      docker_compose:
-        project_src: /home/ubuntu
-        state: present
+      docker_compose:  # Utilise le module 'docker_compose' pour gérer les conteneurs avec Docker-compose
+        project_src: /home/ubuntu  # Chemin local du projet Docker-compose
+        state: present  # Assure que les services spécifiés dans le fichier de composition sont en cours d'exécution
