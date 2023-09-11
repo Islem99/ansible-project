@@ -20,6 +20,6 @@ Dans notre projet le playbook a pour objectif:
 
 Pour lancer Ansible, nous pouvons utiliser la commande ansible-playbook suivi du nom du playbook que vous souhaitez exécute
 
-`ansible-playbook my_playbook.yml`
+`ansible-playbook my-playbook.yaml`
 
  
