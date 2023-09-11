@@ -15,13 +15,6 @@ Dans notre projet le playbook a pour objectif:
  2) Copier un fichier Docker-compose au serveur EC2
  3) Lancement des conteneurs en utilisant la commande docker-compose
  
- 
-
-Pour générer une paire de clés SSH (clé publique et clé privée), nous poucons z utiliser la commande ssh-keygen. 
-
-`ssh-keygen -t rsa -f ~/.ssh/ma_cle`  -t pour spécifier le type de clé (par défaut RSA), et l'option -f pour indiquer le nom du fichier où la clé sera enregistrée.
-
-
 
 ## Lancement Ansible
 
