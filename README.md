@@ -18,7 +18,7 @@ Dans notre projet le playbook a pour objectif:
 
 ## Lancement Ansible
 
-Remarque avant de lancer Ansible il faut créer un fichier hosts et mettre ce code 
+Remarque: avant de lancer Ansible il faut créer un fichier hosts et mettre ce code 
 ```
 [Docker_server]
 adresse_ip_publique ansible_ssh_private_key_file=/home/ubuntu/EKS-key.pem ansible_user=ubuntu
